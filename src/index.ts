@@ -4,14 +4,14 @@ import "dotenv/config";
 import { checkDB, syncDB } from './config';
 import { User } from './models';
 import seedAll from './config/seed';
+import { router } from './routes';
 const PORT = process.env.PORT || 3000
 
 const app = express();
 app.use(express.json())
 
-app.get('/', (req, res) => {
-  res.send('Server running 🚀')
-})
+
+app.use("/", router);
 
 async function start() {
   await checkDB();

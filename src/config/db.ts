@@ -3,6 +3,7 @@ import dotenv from "dotenv";
 import seedAll from "./seed";
 
 dotenv.config();
+console.log(process.env.POSTGRES_DB, process.env.POSTGRES_USER, process.env.POSTGRES_PASSWORD);
 
 const sequelize = new Sequelize(
     process.env.POSTGRES_DB as string,
