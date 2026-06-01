@@ -6,4 +6,4 @@ export * from './preference.controller'
 export * from './comment.controller'
 export * from './category.controller'
 export * from './event.controller'
-
+export * from './notification.controller'

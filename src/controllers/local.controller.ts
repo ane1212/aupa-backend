@@ -54,6 +54,6 @@ export const verifyLocal = async (req: Request, res: Response, next: NextFunctio
 export const deleteLocal = async (req: Request, res: Response, next: NextFunction) => {
     try {
         await deleteLocalService(req.params.id as string)
-        return res.status(204).send()
+        return res.json({ code: 'LOCAL_DELETED' })
     } catch (error) { next(error) }
 }
