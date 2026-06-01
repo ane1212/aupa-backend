@@ -1,5 +1,6 @@
 export * from './user.controller'
 export * from './auth.controller'
+export * from './local.controller'
 export * from './favorite.controller'
 export * from './preference.controller'
 export * from './category.controller'

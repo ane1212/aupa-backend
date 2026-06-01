@@ -1,3 +1,4 @@
 export * from './user.dto'
+export * from './local.dto'
 export * from './favorite.dto'
 export * from './preference.dto'
