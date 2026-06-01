@@ -1,6 +1,6 @@
 export * from './user.controller'
-<<<<<<< HEAD
-export * from './category.controller'
-=======
 export * from './auth.controller'
->>>>>>> dev
+export * from './favorite.controller'
+export * from './preference.controller'
+export * from './category.controller'
+export * from './auth.controller'
