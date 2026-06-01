@@ -1,4 +1,7 @@
 export * from './user.routes'
 export * from './routes'
 export * from './api.routes'
+export * from './category.routes'
 export * from './auth.routes'
+export * from './favorite.routes'
+export * from './preference.routes'
