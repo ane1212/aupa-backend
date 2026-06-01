@@ -11,7 +11,7 @@ const app = express();
 app.use(express.json())
 
 
-app.use("/", router);
+app.use(router);
 
 async function start() {
   await checkDB();
