@@ -4,5 +4,3 @@ export * from './preference.service'
 export * from './comment.service'
 export * from './category.service'
 export * from './event.service'
-export * from './local.service'
-
