@@ -16,7 +16,6 @@ export const getAllCategory = async (req: Request, res: Response) => {
     }
 }
 
-// ◄ Corregido el nombre a 'getCategoryById'
 export const getCategoryById = async (req: Request, res: Response) => {
     try {
         const category = await getCategoryByIdService(req.params.id as string)
@@ -35,7 +34,6 @@ export const createCategory = async (req: Request, res: Response) => {
     }
 }
 
-// ◄ Corregido el nombre a 'updateCategory'
 export const updateCategory = async (req: Request, res: Response) => {
     try {
         const categoryUpdate = await updateCategoryService(req.params.id as string, req.body)
