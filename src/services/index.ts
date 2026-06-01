@@ -1,2 +1,6 @@
 export * from './user.service'
 export * from './favorite.service'
+export * from './preference.service'
+export * from './comment.service'
+export * from './category.service'
+export * from './event.service'

@@ -1,35 +1,28 @@
-import { Favorite } from '@/models/Favorite'
-import { CreateFavoriteDto, FavoriteResponseDto } from '@/dtos/favorite.dto'
+import { Favorite } from '@/models'
+import { CreateFavoriteDto } from '@/dtos'
+import { AppError, ErrorCode } from '@/utils'
 
-export class FavoriteService {
-  async create(dto: CreateFavoriteDto): Promise<FavoriteResponseDto> {
-    const favorite = await Favorite.create({
-      userId: dto.userId,
-      eventId: dto.eventId,
-    })
-    return new FavoriteResponseDto(favorite.toJSON())
-  }
-
-  async findAllByUser(userId: string): Promise<FavoriteResponseDto[]> {
-    const favorites = await Favorite.findAll({ where: { userId } })
-    return favorites.map(f => new FavoriteResponseDto(f.toJSON()))
-  }
-
-  async findOne(id: string): Promise<FavoriteResponseDto | null> {
-    const favorite = await Favorite.findByPk(id)
-    if (!favorite) return null
-    return new FavoriteResponseDto(favorite.toJSON())
-  }
-
-  async delete(id: string, userId: string): Promise<boolean> {
-    const rows = await Favorite.destroy({ where: { id, userId } })
-    return rows > 0
-  }
-
-  async existsByUserAndEvent(userId: string, eventId: string): Promise<boolean> {
-    const favorite = await Favorite.findOne({ where: { userId, eventId } })
-    return !!favorite
-  }
+export const createFavoriteService = async (data: CreateFavoriteDto) => {
+    return await Favorite.create(data)
 }
 
-export const favoriteService = new FavoriteService()
+export const getFavoriteByIdService = async (id: string) => {
+    const favorite = await Favorite.findByPk(id)
+    if (!favorite) throw new AppError(ErrorCode.FAVORITE_NOT_FOUND, 404)
+    return favorite
+}
+
+export const getAllFavoritesByUserService = async (userId: string) => {
+    return await Favorite.findAll({ where: { userId } })
+}
+
+export const deleteFavoriteService = async (id: string, userId: string) => {
+    const favorite = await Favorite.findOne({ where: { id, userId } })
+    if (!favorite) throw new AppError(ErrorCode.FAVORITE_NOT_FOUND, 404)
+    await favorite.destroy()
+}
+
+export const favoriteExistsByUserAndEventService = async (userId: string, eventId: string) => {
+    const favorite = await Favorite.findOne({ where: { userId, eventId } })
+    return !!favorite
+}

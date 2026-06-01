@@ -1,5 +1,6 @@
 export * from './user.dto'
-export * from './auth.dto'
 export * from './favorite.dto'
 export * from './preference.dto'
 export * from './comment.dto'
+export * from './category.dto'
+export * from './event.dto'

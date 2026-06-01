@@ -1,76 +1,65 @@
-    import { Request, Response } from 'express'
-import { commentService } from '@/services/comment.service'
-import { CreateCommentDto, UpdateCommentDto } from '@/dtos/comment.dto'
+import { Request, Response } from 'express'
+import {
+    createCommentService,
+    getCommentByIdService,
+    getAllCommentsByEventService,
+    getAllCommentsByUserService,
+    updateCommentService,
+    deleteCommentService
+} from '@/services'
+import { AppError, ErrorCode } from '@/utils'
 
-export class CommentController {
-  async create(req: Request, res: Response): Promise<void> {
-    const dto: CreateCommentDto = req.body
-
-    if (dto.rating < 1 || dto.rating > 5) {
-      res.status(400).json({ message: 'Rating must be between 1 and 5' })
-      return
+const handleError = (error: unknown, res: Response) => {
+    if (error instanceof AppError) {
+        return res.status(error.statusCode).json({ code: error.code })
     }
-
-    const comment = await commentService.create(dto)
-    res.status(201).json(comment)
-  }
-
-  async findAllByEvent(req: Request, res: Response): Promise<void> {
-    const { eventId } = req.params
-    const comments = await commentService.findAllByEvent(eventId as string)
-    res.status(200).json(comments)
-  }
-
-  async findAllByUser(req: Request, res: Response): Promise<void> {
-    const { userId } = req.params
-    const comments = await commentService.findAllByUser(userId as string)
-    res.status(200).json(comments)
-  }
-
-  async findOne(req: Request, res: Response): Promise<void> {
-    const { id } = req.params
-    const comment = await commentService.findOne(id as string)
-
-    if (!comment) {
-      res.status(404).json({ message: 'Comment not found' })
-      return
-    }
-
-    res.status(200).json(comment)
-  }
-
-  async update(req: Request, res: Response): Promise<void> {
-    const { id } = req.params
-    const { userId, ...dto }: { userId: string } & UpdateCommentDto = req.body
-
-    if (dto.rating !== undefined && (dto.rating < 1 || dto.rating > 5)) {
-      res.status(400).json({ message: 'Rating must be between 1 and 5' })
-      return
-    }
-
-    const updated = await commentService.update(id as string, userId, dto)
-
-    if (!updated) {
-      res.status(404).json({ message: 'Comment not found or unauthorized' })
-      return
-    }
-
-    res.status(200).json(updated)
-  }
-
-  async delete(req: Request, res: Response): Promise<void> {
-    const { id } = req.params
-    const { userId } = req.body
-
-    const deleted = await commentService.delete(id as string, userId)
-
-    if (!deleted) {
-      res.status(404).json({ message: 'Comment not found or unauthorized' })
-      return
-    }
-
-    res.status(204).send()
-  }
+    return res.status(500).json({ code: 'INTERNAL_SERVER_ERROR' })
 }
 
-export const commentController = new CommentController()
+export const createComment = async (req: Request, res: Response) => {
+    try {
+        if (req.body.rating < 1 || req.body.rating > 5) {
+            return res.status(400).json({ code: ErrorCode.VALIDATION_ERROR })
+        }
+        const comment = await createCommentService({ ...req.body, userId: req.user!.id, eventId: req.body.eventId as string })
+        res.status(201).json(comment)
+    } catch (error) { handleError(error, res) }
+}
+
+export const getCommentsByEvent = async (req: Request, res: Response) => {
+    try {
+        const comments = await getAllCommentsByEventService(req.params.eventId as string)
+        res.json(comments)
+    } catch (error) { handleError(error, res) }
+}
+
+export const getCommentsByUser = async (req: Request, res: Response) => {
+    try {
+        const comments = await getAllCommentsByUserService(req.params.userId as string)
+        res.json(comments)
+    } catch (error) { handleError(error, res) }
+}
+
+export const getCommentById = async (req: Request, res: Response) => {
+    try {
+        const comment = await getCommentByIdService(req.params.id as string)
+        res.json(comment)
+    } catch (error) { handleError(error, res) }
+}
+
+export const updateComment = async (req: Request, res: Response) => {
+    try {
+        if (req.body.rating !== undefined && (req.body.rating < 1 || req.body.rating > 5)) {
+            return res.status(400).json({ code: ErrorCode.VALIDATION_ERROR })
+        }
+        const comment = await updateCommentService(req.params.id as string, req.user!.id, req.body)
+        res.json(comment)
+    } catch (error) { handleError(error, res) }
+}
+
+export const deleteComment = async (req: Request, res: Response) => {
+    try {
+        await deleteCommentService(req.params.id as string, req.user!.id)
+        res.json({ code: 'COMMENT_DELETED' })
+    } catch (error) { handleError(error, res) }
+}

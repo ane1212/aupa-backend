@@ -1,51 +1,46 @@
 import { Request, Response } from 'express'
-import { favoriteService } from '@/services/favorite.service'
-import { CreateFavoriteDto } from '@/dtos/favorite.dto'
-export class FavoriteController {
-  async create(req: Request, res: Response): Promise<void> {
-    const dto: CreateFavoriteDto = req.body
+import {
+    createFavoriteService,
+    getFavoriteByIdService,
+    getAllFavoritesByUserService,
+    deleteFavoriteService,
+    favoriteExistsByUserAndEventService
+} from '@/services'
+import { AppError, ErrorCode } from '@/utils'
 
-    const alreadyExists = await favoriteService.existsByUserAndEvent(dto.userId, dto.eventId)
-    if (alreadyExists) {
-      res.status(409).json({ message: 'Favorite already exists' })
-      return
+const handleError = (error: unknown, res: Response) => {
+    if (error instanceof AppError) {
+        return res.status(error.statusCode).json({ code: error.code })
     }
-
-    const favorite = await favoriteService.create(dto)
-    res.status(201).json(favorite)
-  }
-
-  async findAllByUser(req: Request, res: Response): Promise<void> {
-    const { userId } = req.params
-    const favorites = await favoriteService.findAllByUser(userId as string)
-    res.status(200).json(favorites)
-  }
-
-  async findOne(req: Request, res: Response): Promise<void> {
-    const { id } = req.params
-    const favorite = await favoriteService.findOne(id as string)
-
-    if (!favorite) {
-      res.status(404).json({ message: 'Favorite not found' })
-      return
-    }
-
-    res.status(200).json(favorite)
-  }
-
-  async delete(req: Request, res: Response): Promise<void> {
-    const { id } = req.params
-    const { userId } = req.body
-
-    const deleted = await favoriteService.delete(id as string, userId)
-
-    if (!deleted) {
-      res.status(404).json({ message: 'Favorite not found or unauthorized' })
-      return
-    }
-
-    res.status(204).send()
-  }
+    return res.status(500).json({ code: 'INTERNAL_SERVER_ERROR' })
 }
 
-export const favoriteController = new FavoriteController()
+export const createFavorite = async (req: Request, res: Response) => {
+    try {
+        const alreadyExists = await favoriteExistsByUserAndEventService(req.user!.id, req.body.eventId as string)
+        if (alreadyExists) return res.status(409).json({ code: ErrorCode.FAVORITE_ALREADY_EXISTS })
+        const favorite = await createFavoriteService({ userId: req.user!.id, eventId: req.body.eventId as string })
+        res.status(201).json(favorite)
+    } catch (error) { handleError(error, res) }
+}
+
+export const getFavoritesByUser = async (req: Request, res: Response) => {
+    try {
+        const favorites = await getAllFavoritesByUserService(req.params.userId as string)
+        res.json(favorites)
+    } catch (error) { handleError(error, res) }
+}
+
+export const getFavoriteById = async (req: Request, res: Response) => {
+    try {
+        const favorite = await getFavoriteByIdService(req.params.id as string)
+        res.json(favorite)
+    } catch (error) { handleError(error, res) }
+}
+
+export const deleteFavorite = async (req: Request, res: Response) => {
+    try {
+        await deleteFavoriteService(req.params.id as string, req.user!.id)
+        res.json({ code: 'FAVORITE_DELETED' })
+    } catch (error) { handleError(error, res) }
+}
