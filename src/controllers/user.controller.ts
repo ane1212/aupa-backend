@@ -47,6 +47,7 @@ export const deleteProfile = async (req: Request, res: Response) => {
 
 export const updateAvatar = async (req: Request, res: Response) => {
     try {
+        if (!req.body.avatar) return res.status(400).json({ code: 'VALIDATION_ERROR' })
         const user = await updateAvatarService(req.user!.id, req.body.avatar)
         res.json(user)
     } catch (error) { handleError(error, res) }

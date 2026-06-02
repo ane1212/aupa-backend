@@ -39,6 +39,7 @@ export const checkCredentials = async (req: Request, res: Response, next: NextFu
 
     const isPasswordCorrect = await bcrypt.compare(password, user.password)
     if (!isPasswordCorrect) throw new AppError(ErrorCode.INVALID_CREDENTIALS, 401)
+    if (!user.active) throw new AppError(ErrorCode.INVALID_CREDENTIALS, 401)
 
     req.user = { id: user.id, role: user.role }
 
@@ -64,12 +65,13 @@ export const verifyToken = async (req: Request, res: Response, next: NextFunctio
 
     const user = await User.findByPk(payload.id)
     if (!user) throw new AppError(ErrorCode.USER_NOT_FOUND, 404)
+    if (!user.active) throw new AppError(ErrorCode.UNAUTHORIZED, 401)
 
     req.user = { id: user.id, role: user.role }
     next()
   } catch (error) {
-    if (error instanceof jwt.TokenExpiredError) {
-      return next(new AppError(ErrorCode.INVALID_TOKEN, 401))
+    if (error instanceof AppError) {
+      return next(error)
     }
     return next(new AppError(ErrorCode.INVALID_TOKEN, 401))
   }

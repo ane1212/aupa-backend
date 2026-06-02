@@ -7,6 +7,7 @@ import {
     favoriteExistsByUserAndEventService
 } from '@/services'
 import { AppError, ErrorCode } from '@/utils'
+import { UserRole } from '@/enums'
 
 const handleError = (error: unknown, res: Response) => {
     if (error instanceof AppError) {
@@ -26,6 +27,8 @@ export const createFavorite = async (req: Request, res: Response) => {
 
 export const getFavoritesByUser = async (req: Request, res: Response) => {
     try {
+        if (req.user!.id !== req.params.userId && req.user!.role !== UserRole.SUPER_ADMIN)
+            return res.status(403).json({ code: ErrorCode.FORBIDDEN })
         const favorites = await getAllFavoritesByUserService(req.params.userId as string)
         res.json(favorites)
     } catch (error) { handleError(error, res) }
@@ -34,6 +37,8 @@ export const getFavoritesByUser = async (req: Request, res: Response) => {
 export const getFavoriteById = async (req: Request, res: Response) => {
     try {
         const favorite = await getFavoriteByIdService(req.params.id as string)
+        if (favorite.userId !== req.user!.id && req.user!.role !== UserRole.SUPER_ADMIN)
+            return res.status(403).json({ code: ErrorCode.FORBIDDEN })
         res.json(favorite)
     } catch (error) { handleError(error, res) }
 }

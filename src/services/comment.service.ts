@@ -27,8 +27,10 @@ export const updateCommentService = async (id: string, userId: string, data: Upd
     return comment
 }
 
-export const deleteCommentService = async (id: string, userId: string) => {
-    const comment = await Comment.findOne({ where: { id, userId } })
+export const deleteCommentService = async (id: string, userId: string, isAdmin = false) => {
+    const comment = isAdmin
+        ? await Comment.findByPk(id)
+        : await Comment.findOne({ where: { id, userId } })
     if (!comment) throw new AppError(ErrorCode.COMMENT_NOT_FOUND, 404)
     await comment.destroy()
 }

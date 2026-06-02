@@ -8,6 +8,7 @@ import {
     deleteCommentService
 } from '@/services'
 import { AppError, ErrorCode } from '@/utils'
+import { UserRole } from '@/enums'
 
 const handleError = (error: unknown, res: Response) => {
     if (error instanceof AppError) {
@@ -18,7 +19,7 @@ const handleError = (error: unknown, res: Response) => {
 
 export const createComment = async (req: Request, res: Response) => {
     try {
-        if (req.body.rating < 1 || req.body.rating > 5) {
+        if (req.body.rating === undefined || req.body.rating < 1 || req.body.rating > 5) {
             return res.status(400).json({ code: ErrorCode.VALIDATION_ERROR })
         }
         const comment = await createCommentService({ ...req.body, userId: req.user!.id, eventId: req.body.eventId as string })
@@ -59,7 +60,8 @@ export const updateComment = async (req: Request, res: Response) => {
 
 export const deleteComment = async (req: Request, res: Response) => {
     try {
-        await deleteCommentService(req.params.id as string, req.user!.id)
+        const isAdmin = req.user!.role === UserRole.SUPER_ADMIN
+        await deleteCommentService(req.params.id as string, req.user!.id, isAdmin)
         res.json({ code: 'COMMENT_DELETED' })
     } catch (error) { handleError(error, res) }
 }
