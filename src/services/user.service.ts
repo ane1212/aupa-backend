@@ -34,6 +34,7 @@ export const updateUserService = async (id: string, data: UpdateUserDto) => {
 }
 
 export const updateUserRoleService = async (id: string, role: UserRole) => {
+    if (!Object.values(UserRole).includes(role)) throw new AppError(ErrorCode.VALIDATION_ERROR, 400)
     const user = await User.findByPk(id)
     if (!user) throw new AppError(ErrorCode.USER_NOT_FOUND, 404)
     await user.update({ role })

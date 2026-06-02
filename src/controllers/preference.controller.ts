@@ -7,6 +7,7 @@ import {
     preferenceExistsByUserAndCategoryService
 } from '@/services'
 import { AppError, ErrorCode } from '@/utils'
+import { UserRole } from '@/enums'
 
 const handleError = (error: unknown, res: Response) => {
     if (error instanceof AppError) {
@@ -26,6 +27,8 @@ export const createPreference = async (req: Request, res: Response) => {
 
 export const getPreferencesByUser = async (req: Request, res: Response) => {
     try {
+        if (req.user!.id !== req.params.userId && req.user!.role !== UserRole.SUPER_ADMIN)
+            return res.status(403).json({ code: ErrorCode.FORBIDDEN })
         const preferences = await getAllPreferencesByUserService(req.params.userId as string)
         res.json(preferences)
     } catch (error) { handleError(error, res) }
@@ -34,6 +37,8 @@ export const getPreferencesByUser = async (req: Request, res: Response) => {
 export const getPreferenceById = async (req: Request, res: Response) => {
     try {
         const preference = await getPreferenceByIdService(req.params.id as string)
+        if (preference.userId !== req.user!.id && req.user!.role !== UserRole.SUPER_ADMIN)
+            return res.status(403).json({ code: ErrorCode.FORBIDDEN })
         res.json(preference)
     } catch (error) { handleError(error, res) }
 }
