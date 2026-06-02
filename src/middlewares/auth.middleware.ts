@@ -48,7 +48,7 @@ export const checkCredentials = async (req: Request, res: Response, next: NextFu
   }
 }
 
-export const verifyToken = (req: Request, res: Response, next: NextFunction) => {
+export const verifyToken = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const authHeader = req.headers.authorization
 
@@ -62,7 +62,10 @@ export const verifyToken = (req: Request, res: Response, next: NextFunction) => 
       role: UserRole
     }
 
-    req.user = payload
+    const user = await User.findByPk(payload.id)
+    if (!user) throw new AppError(ErrorCode.USER_NOT_FOUND, 404)
+
+    req.user = { id: user.id, role: user.role }
     next()
   } catch (error) {
     if (error instanceof jwt.TokenExpiredError) {

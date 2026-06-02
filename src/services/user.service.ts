@@ -24,7 +24,11 @@ export const getAllUsersService = async () => {
 export const updateUserService = async (id: string, data: UpdateUserDto) => {
     const user = await User.findByPk(id)
     if (!user) throw new AppError(ErrorCode.USER_NOT_FOUND, 404)
-    await user.update(data)
+    const allowedData: UpdateUserDto = {}
+    if (data.name !== undefined) allowedData.name = data.name
+    if (data.avatar !== undefined) allowedData.avatar = data.avatar
+
+    await user.update(allowedData, { fields: ['name', 'avatar'] })
     const { password, ...userWithoutPassword } = user.toJSON()
     return userWithoutPassword
 }
