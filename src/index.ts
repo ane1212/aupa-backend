@@ -1,14 +1,19 @@
 
 import express, { NextFunction, Request, Response } from 'express';
+import { createServer } from 'http';
 import "dotenv/config";
 import { checkDB, syncDB } from './config';
 import { User } from './models';
 import seedAll from './config/seed';
 import { router } from './routes';
 import { AppError } from './utils';
+import { initSocket } from './socket';
 const PORT = process.env.PORT || 3000
 
 const app = express();
+const server = createServer(app);
+initSocket(server);
+
 app.use(express.json())
 
 app.use("/", router);
@@ -29,7 +34,7 @@ async function start() {
     console.log('Seed cargado.');
   }
 
-  app.listen(PORT, () => {
+  server.listen(PORT, () => {
     console.log(` Servidor en puerto ${PORT}`);
   });
 }
