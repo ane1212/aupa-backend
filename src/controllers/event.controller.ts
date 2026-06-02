@@ -7,7 +7,9 @@ import {
     toggleEventActiveService,
     deleteEventService
 } from '@/services'
-import { AppError } from '@/utils'
+import { AppError, ErrorCode } from '@/utils'
+import { UserRole } from '@/enums'
+import { Local } from '@/models'
 
 const handleError = (error: unknown, res: Response) => {
     if (error instanceof AppError) {
@@ -31,15 +33,36 @@ export const getEventById = async (req: Request, res: Response) => {
     } catch (error) { handleError(error, res) }
 }
 
+const getOwnLocalId = async (userId: string): Promise<string> => {
+    const local = await Local.findOne({ where: { userId } })
+    if (!local) throw new AppError(ErrorCode.LOCAL_NOT_FOUND, 404)
+    return local.id
+}
+
+const assertOwnsEvent = async (userId: string, eventId: string): Promise<void> => {
+    const [local, event] = await Promise.all([
+        Local.findOne({ where: { userId } }),
+        getEventByIdService(eventId),
+    ])
+    if (!local || local.id !== event.localId) throw new AppError(ErrorCode.FORBIDDEN, 403)
+}
+
 export const createEvent = async (req: Request, res: Response) => {
     try {
-        const event = await createEventService(req.body)
+        let localId = req.body.localId
+        if (req.user!.role === UserRole.LOCAL) {
+            localId = await getOwnLocalId(req.user!.id)
+        }
+        const event = await createEventService({ ...req.body, localId })
         res.status(201).json(event)
     } catch (error) { handleError(error, res) }
 }
 
 export const updateEvent = async (req: Request, res: Response) => {
     try {
+        if (req.user!.role === UserRole.LOCAL) {
+            await assertOwnsEvent(req.user!.id, req.params.id as string)
+        }
         const event = await updateEventService(req.params.id as string, req.body)
         res.json(event)
     } catch (error) { handleError(error, res) }
@@ -47,6 +70,9 @@ export const updateEvent = async (req: Request, res: Response) => {
 
 export const toggleEventActive = async (req: Request, res: Response) => {
     try {
+        if (req.user!.role === UserRole.LOCAL) {
+            await assertOwnsEvent(req.user!.id, req.params.id as string)
+        }
         const event = await toggleEventActiveService(req.params.id as string)
         res.json(event)
     } catch (error) { handleError(error, res) }
@@ -54,6 +80,9 @@ export const toggleEventActive = async (req: Request, res: Response) => {
 
 export const deleteEvent = async (req: Request, res: Response) => {
     try {
+        if (req.user!.role === UserRole.LOCAL) {
+            await assertOwnsEvent(req.user!.id, req.params.id as string)
+        }
         await deleteEventService(req.params.id as string)
         res.json({ code: 'EVENT_DELETED' })
     } catch (error) { handleError(error, res) }
