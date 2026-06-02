@@ -5,8 +5,8 @@ import { categoryRouter } from "./category.routes";
 import { eventRouter } from "./event.routes";
 import {favoriteRouter} from "./favorite.routes";
 import { localRouter } from "./local.routes";
-import {preferenceRouter} from "./preference.routes";
-import {commentRouter} from "./comment.routes";
+import { commentRouter } from "./comment.routes";
+import { preferenceRouter } from "./preference.routes";
 import { notificationRouter } from "./notification.routes";
 
 export const apiRouter = Router()
@@ -17,6 +17,6 @@ apiRouter.use('/category', categoryRouter);
 apiRouter.use('/event', eventRouter);
 apiRouter.use('/favorites', favoriteRouter);
 apiRouter.use('/local', localRouter);
-apiRouter.use('/preferences', preferenceRouter);
-apiRouter.use('/comments', commentRouter);
-apiRouter.use('/notifications', notificationRouter);
+apiRouter.use('/comment', commentRouter);
+apiRouter.use('/preference', preferenceRouter);
+apiRouter.use('/notification', notificationRouter);

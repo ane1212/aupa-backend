@@ -3,4 +3,4 @@ import { apiRouter } from "./api.routes";
 
 export const router = Router();
 
-router.use(apiRouter);
+router.use("/", apiRouter);
