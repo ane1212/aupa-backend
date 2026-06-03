@@ -4,8 +4,10 @@ import {
     getPreferenceByIdService,
     getAllPreferencesByUserService,
     deletePreferenceService,
-    preferenceExistsByUserAndCategoryService
+    preferenceExistsByUserAndCategoryService,
+    getUserCategoryNamesService,
 } from '@/services'
+import { getRecommendationsService } from '@/services'
 import { AppError, ErrorCode } from '@/utils'
 import { UserRole } from '@/enums'
 
@@ -47,5 +49,27 @@ export const deletePreference = async (req: Request, res: Response) => {
     try {
         await deletePreferenceService(req.params.id as string, req.user!.id)
         res.json({ code: 'PREFERENCE_DELETED' })
+    } catch (error) { handleError(error, res) }
+}
+
+export const getRecommendations = async (req: Request, res: Response) => {
+    try {
+        const { lat, len } = req.query
+
+        if (!lat || !len) {
+            return res.status(400).json({ code: ErrorCode.VALIDATION_ERROR })
+        }
+
+        const parsedLat = parseFloat(lat as string)
+        const parsedLen = parseFloat(len as string)
+
+        if (isNaN(parsedLat) || isNaN(parsedLen)) {
+            return res.status(400).json({ code: ErrorCode.VALIDATION_ERROR })
+        }
+
+        const categories = await getUserCategoryNamesService(req.user!.id)
+        const recommendations = await getRecommendationsService(parsedLat, parsedLen, categories)
+
+        res.json(recommendations)
     } catch (error) { handleError(error, res) }
 }

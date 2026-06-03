@@ -1,11 +1,13 @@
+import { CategoryType } from "@/enums"
+
 export interface CreateCategoryDto {
-    name: string
+    name: CategoryType
     description?: string
     icon?: string
 }
 
 export interface UpdateCategoryDto {
-    name?: string
+    name?: CategoryType
     description?: string
     icon?: string
 }
