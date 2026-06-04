@@ -32,7 +32,7 @@ export const getLocalById = async (req: Request, res: Response, next: NextFuncti
 
 export const getAllLocals = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const locals = await getAllLocalsService()
+        const locals = await getAllLocalsService(req.query)
         return res.json(locals)
     } catch (error) { next(error) }
 }

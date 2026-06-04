@@ -15,9 +15,9 @@ const handleError = (error: unknown, res: Response) => {
     return res.status(500).json({ code: 'INTERNAL_SERVER_ERROR' })
 }
 
-export const getAllCategory = async (_req: Request, res: Response) => {
+export const getAllCategory = async (req: Request, res: Response) => {
     try {
-        const categories = await getAllCategoriesService()
+        const categories = await getAllCategoriesService(req.query)
         res.json(categories)
     } catch (error) { handleError(error, res) }
 }

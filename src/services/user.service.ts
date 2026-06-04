@@ -1,7 +1,8 @@
 import { User } from '@/models'
 import { CreateUserDto, UpdateUserDto } from '@/dtos'
 import { UserRole } from '@/enums'
-import { AppError, ErrorCode } from '@/utils'
+import { AppError, ErrorCode, buildQueryOptions, getPaginatedResponse } from '@/utils'
+import { PaginationQuery } from '@/types'
 
 export const createUserService = async (data: CreateUserDto) => {
     await User.create({ ...data, role: data.role ?? UserRole.USER })
@@ -15,10 +16,13 @@ export const getUserByIdService = async (id: string) => {
     return user
 }
 
-export const getAllUsersService = async () => {
-    return await User.findAll({
-        attributes: { exclude: ['password'] }
-    })
+export const getAllUsersService = async (query: PaginationQuery = {}) => {
+    const options = buildQueryOptions(query, ['name', 'email'], ['role', 'active'])
+    options.attributes = { exclude: ['password'] }
+    const result = await User.findAndCountAll(options)
+    const page = query.page ? parseInt(query.page as any, 10) : 1
+    const limit = query.limit ? parseInt(query.limit as any, 10) : 10
+    return getPaginatedResponse(result, page, limit)
 }
 
 export const updateUserService = async (id: string, data: UpdateUserDto) => {

@@ -55,7 +55,7 @@ export const updateAvatar = async (req: Request, res: Response) => {
 
 export const getAllUsers = async (req: Request, res: Response) => {
     try {
-        const users = await getAllUsersService()
+        const users = await getAllUsersService(req.query)
         res.json(users)
     } catch (error) { handleError(error, res) }
 }

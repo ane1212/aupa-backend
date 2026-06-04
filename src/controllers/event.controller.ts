@@ -21,7 +21,7 @@ const handleError = (error: unknown, res: Response) => {
 export const getAllEvents = async (req: Request, res: Response) => {
     try {
         const onlyActive = req.query.active === 'true'
-        const events = await getAllEventsService(onlyActive)
+        const events = await getAllEventsService(onlyActive, req.query)
         res.json(events)
     } catch (error) { handleError(error, res) }
 }

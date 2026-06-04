@@ -1,10 +1,16 @@
 import { Event } from '@/models'
 import { CreateEventDto, UpdateEventDto } from '@/dtos'
-import { AppError, ErrorCode } from '@/utils'
+import { AppError, ErrorCode, buildQueryOptions, getPaginatedResponse } from '@/utils'
+import { PaginationQuery } from '@/types'
 
-export const getAllEventsService = async (onlyActive: boolean = false) => {
+export const getAllEventsService = async (onlyActive: boolean = false, query: PaginationQuery = {}) => {
+    const options = buildQueryOptions(query, ['title', 'description'], ['categoryId', 'status', 'localId'])
     const whereClause = onlyActive ? { active: true } : {}
-    return await Event.findAll({ where: whereClause })
+    options.where = { ...options.where, ...whereClause }
+    const result = await Event.findAndCountAll(options)
+    const page = query.page ? parseInt(query.page as any, 10) : 1
+    const limit = query.limit ? parseInt(query.limit as any, 10) : 10
+    return getPaginatedResponse(result, page, limit)
 }
 
 export const getEventByIdService = async (id: string) => {

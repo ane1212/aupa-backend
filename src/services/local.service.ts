@@ -2,7 +2,8 @@ import { sequelize } from '@/config'
 import { Local, User } from '@/models'
 import { CreateLocalDto, UpdateLocalDto, VerifyLocalDto } from '@/dtos'
 import { LocalStatus, NotificationType, UserRole } from '@/enums'
-import { AppError, ErrorCode } from '@/utils'
+import { AppError, ErrorCode, buildQueryOptions, getPaginatedResponse } from '@/utils'
+import { PaginationQuery } from '@/types'
 import { createNotificationService } from './notification.service'
 
 export const createLocalService = async (userId: string, data: CreateLocalDto) => {
@@ -31,8 +32,12 @@ export const getLocalByIdService = async (id: string) => {
     return local
 }
 
-export const getAllLocalsService = async () => {
-    return await Local.findAll()
+export const getAllLocalsService = async (query: PaginationQuery = {}) => {
+    const options = buildQueryOptions(query, ['name', 'description', 'address'], ['status', 'categoryId'])
+    const result = await Local.findAndCountAll(options)
+    const page = query.page ? parseInt(query.page as any, 10) : 1
+    const limit = query.limit ? parseInt(query.limit as any, 10) : 10
+    return getPaginatedResponse(result, page, limit)
 }
 
 export const updateLocalService = async (userId: string, data: UpdateLocalDto) => {
