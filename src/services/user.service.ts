@@ -4,7 +4,7 @@ import { UserRole } from '@/enums'
 import { AppError, ErrorCode } from '@/utils'
 
 export const createUserService = async (data: CreateUserDto) => {
-    await User.create({ ...data, role: UserRole.USER })
+    await User.create({ ...data, role: data.role ?? UserRole.USER })
 }
 
 export const getUserByIdService = async (id: string) => {
