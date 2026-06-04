@@ -1,4 +1,5 @@
-import { Preference } from '@/models'
+import { Op } from 'sequelize'
+import { Category, Preference } from '@/models'
 import { CreatePreferenceDto } from '@/dtos'
 import { AppError, ErrorCode } from '@/utils'
 
@@ -25,4 +26,16 @@ export const deletePreferenceService = async (id: string, userId: string) => {
 export const preferenceExistsByUserAndCategoryService = async (userId: string, categoryId: string) => {
     const preference = await Preference.findOne({ where: { userId, categoryId } })
     return !!preference
+}
+
+export const getUserCategoryNamesService = async (userId: string): Promise<string[]> => {
+    const preferences = await Preference.findAll({ where: { userId } })
+    if (preferences.length === 0) return []
+
+    const categoryIds = preferences.map(p => p.categoryId)
+    const categories = await Category.findAll({
+        where: { id: { [Op.in]: categoryIds } },
+        attributes: ['name'],
+    })
+    return categories.map(c => c.name)
 }
