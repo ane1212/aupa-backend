@@ -16,7 +16,7 @@ initSocket(server);
 
 app.use(express.json())
 
-app.use("/", router);
+app.use("/api", router);
 
 app.use((err: Error, _req: Request, res: Response, _next: NextFunction) => {
     if (err instanceof AppError) {
