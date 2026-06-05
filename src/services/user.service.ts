@@ -31,8 +31,9 @@ export const updateUserService = async (id: string, data: UpdateUserDto) => {
     const allowedData: UpdateUserDto = {}
     if (data.name !== undefined) allowedData.name = data.name
     if (data.avatar !== undefined) allowedData.avatar = data.avatar
+    if (data.language !== undefined) allowedData.language = data.language
 
-    await user.update(allowedData, { fields: ['name', 'avatar'] })
+    await user.update(allowedData, { fields: ['name', 'avatar', 'language'] })
     const { password, ...userWithoutPassword } = user.toJSON()
     return userWithoutPassword
 }

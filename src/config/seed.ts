@@ -91,25 +91,125 @@ const seedAll = async () => {
     const categories = await Category.bulkCreate(
       [
         {
-          name: "Gastronomía",
-          description: "Experiencias gastronómicas, catas y rutas culinarias.",
-          icon: "utensils",
+          name: "food",
+          description: "Food",
+          icon: "Utensils",
         },
         {
-          name: "Música",
-          description: "Conciertos, sesiones en directo y festivales.",
-          icon: "music",
+          name: "culture",
+          description: "Culture",
+          icon: "Building2",
         },
         {
-          name: "Cultura",
-          description: "Actividades culturales, teatro y exposiciones.",
-          icon: "landmark",
+          name: "nature",
+          description: "Nature",
+          icon: "TreePine",
+        },
+        {
+          name: "bars",
+          description: "Bars",
+          icon: "Wine",
+        },
+        {
+          name: "local_favorites",
+          description: "Local favorites",
+          icon: "Bookmark",
+        },
+        {
+          name: "shopping",
+          description: "Shopping",
+          icon: "Store",
+        },
+        {
+          name: "coffee_shops",
+          description: "Coffee Shops",
+          icon: "Coffee",
+        },
+        {
+          name: "walking_tours",
+          description: "Walking Tours",
+          icon: "Map",
+        },
+        {
+          name: "family_friendly",
+          description: "Family Friendly",
+          icon: "Users",
+        },
+        {
+          name: "vegetarian_vegan",
+          description: "Vegetarian/Vegan",
+          icon: "Leaf",
+        },
+        {
+          name: "history",
+          description: "History",
+          icon: "Landmark",
+        },
+        {
+          name: "festivals_events",
+          description: "Festivals/Events",
+          icon: "Calendar",
+        },
+        {
+          name: "beaches",
+          description: "Beaches",
+          icon: "Parasol",
+        },
+        {
+          name: "nightlife",
+          description: "Nightlife",
+          icon: "Eclipse",
+        },
+        {
+          name: "budget_friendly",
+          description: "Budget Friendly",
+          icon: "DollarSign",
+        },
+        {
+          name: "oneday",
+          description: "One-day",
+          icon: "CalendarDays",
+        },
+        {
+          name: "threedays",
+          description: "2-3 days",
+          icon: "CalendarClock",
+        },
+        {
+          name: "oneweek",
+          description: "4-7 days",
+          icon: "Clock",
+        },
+        {
+          name: "longstay",
+          description: "More",
+          icon: "CalendarRange",
+        },
+        {
+          name: "solo",
+          description: "Solo",
+          icon: "User",
+        },
+        {
+          name: "partner",
+          description: "Partner",
+          icon: "UserCircle",
+        },
+        {
+          name: "friends",
+          description: "Friends",
+          icon: "Users2",
+        },
+        {
+          name: "family",
+          description: "Family",
+          icon: "Users",
         },
       ],
       { validate: true, transaction }
     );
 
-    const [gastronomia, musica, cultura] = categories;
+    const [gastronomia, musica] = categories;
 
     const locals = await Local.bulkCreate(
       [
