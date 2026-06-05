@@ -31,7 +31,7 @@ export const getPreferencesByUser = async (req: Request, res: Response) => {
     try {
         if (req.user!.id !== req.params.userId && req.user!.role !== UserRole.SUPER_ADMIN)
             return res.status(403).json({ code: ErrorCode.FORBIDDEN })
-        const preferences = await getAllPreferencesByUserService(req.params.userId as string)
+        const preferences = await getAllPreferencesByUserService(req.params.userId as string, req.query)
         res.json(preferences)
     } catch (error) { handleError(error, res) }
 }

@@ -29,7 +29,7 @@ export const getFavoritesByUser = async (req: Request, res: Response) => {
     try {
         if (req.user!.id !== req.params.userId && req.user!.role !== UserRole.SUPER_ADMIN)
             return res.status(403).json({ code: ErrorCode.FORBIDDEN })
-        const favorites = await getAllFavoritesByUserService(req.params.userId as string)
+        const favorites = await getAllFavoritesByUserService(req.params.userId as string, req.query)
         res.json(favorites)
     } catch (error) { handleError(error, res) }
 }

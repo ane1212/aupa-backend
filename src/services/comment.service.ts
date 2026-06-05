@@ -1,6 +1,7 @@
 import { Comment } from '@/models'
 import { CreateCommentDto, UpdateCommentDto } from '@/dtos'
-import { AppError, ErrorCode } from '@/utils'
+import { AppError, ErrorCode, buildQueryOptions, getPaginatedResponse } from '@/utils'
+import { PaginationQuery } from '@/types'
 
 export const createCommentService = async (data: CreateCommentDto) => {
     return await Comment.create(data)
@@ -12,12 +13,24 @@ export const getCommentByIdService = async (id: string) => {
     return comment
 }
 
-export const getAllCommentsByEventService = async (eventId: string) => {
-    return await Comment.findAll({ where: { eventId }, order: [['createdAt', 'DESC']] })
+export const getAllCommentsByEventService = async (eventId: string, query: PaginationQuery) => {
+    const options = buildQueryOptions(query, ['content'], ['userId', 'localId'])
+    options.where = { ...options.where, eventId }
+    if (!options.order) options.order = [['createdAt', 'DESC']]
+    const result = await Comment.findAndCountAll(options)
+    const page = query.page ? parseInt(query.page as any, 10) : 1
+    const limit = query.limit ? parseInt(query.limit as any, 10) : 10
+    return getPaginatedResponse(result, page, limit)
 }
 
-export const getAllCommentsByUserService = async (userId: string) => {
-    return await Comment.findAll({ where: { userId }, order: [['createdAt', 'DESC']] })
+export const getAllCommentsByUserService = async (userId: string, query: PaginationQuery) => {
+    const options = buildQueryOptions(query, ['content'], ['eventId', 'localId'])
+    options.where = { ...options.where, userId }
+    if (!options.order) options.order = [['createdAt', 'DESC']]
+    const result = await Comment.findAndCountAll(options)
+    const page = query.page ? parseInt(query.page as any, 10) : 1
+    const limit = query.limit ? parseInt(query.limit as any, 10) : 10
+    return getPaginatedResponse(result, page, limit)
 }
 
 export const updateCommentService = async (id: string, userId: string, data: UpdateCommentDto) => {

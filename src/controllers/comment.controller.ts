@@ -29,14 +29,14 @@ export const createComment = async (req: Request, res: Response) => {
 
 export const getCommentsByEvent = async (req: Request, res: Response) => {
     try {
-        const comments = await getAllCommentsByEventService(req.params.eventId as string)
+        const comments = await getAllCommentsByEventService(req.params.eventId as string, req.query)
         res.json(comments)
     } catch (error) { handleError(error, res) }
 }
 
 export const getCommentsByUser = async (req: Request, res: Response) => {
     try {
-        const comments = await getAllCommentsByUserService(req.params.userId as string)
+        const comments = await getAllCommentsByUserService(req.params.userId as string, req.query)
         res.json(comments)
     } catch (error) { handleError(error, res) }
 }

@@ -1,10 +1,15 @@
 import { Category } from '@/models'
 import { CreateCategoryDto, UpdateCategoryDto } from '@/dtos'
-import { AppError, ErrorCode } from '@/utils'
+import { AppError, ErrorCode, buildQueryOptions, getPaginatedResponse } from '@/utils'
 import { CategoryType } from '@/enums'
+import { PaginationQuery } from '@/types'
 
-export const getAllCategoriesService = async () => {
-    return await Category.findAll()
+export const getAllCategoriesService = async (query: PaginationQuery) => {
+    const options = buildQueryOptions(query, ['name'], []);
+    const result = await Category.findAndCountAll(options);
+    const page = query.page ? parseInt(query.page as any, 10) : 1;
+    const limit = query.limit ? parseInt(query.limit as any, 10) : 10;
+    return getPaginatedResponse(result, page, limit);
 }
 
 export const getCategoryByIdService = async (id: string) => {

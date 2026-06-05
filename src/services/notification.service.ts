@@ -1,7 +1,8 @@
 import { Notification } from '@/models'
 import { CreateNotificationDto } from '@/dtos'
-import { AppError, ErrorCode } from '@/utils'
+import { AppError, ErrorCode, buildQueryOptions, getPaginatedResponse } from '@/utils'
 import { NotificationType } from '@/enums'
+import { PaginationQuery } from '@/types'
 import {
     emitAllNotificationsReadToUser,
     emitNotificationDeletedToUser,
@@ -15,11 +16,14 @@ export const createNotificationService = async (data: CreateNotificationDto) => 
     return notification
 }
 
-export const getMyNotificationsService = async (userId: string) => {
-    return await Notification.findAll({
-        where: { userId },
-        order: [['createdAt', 'DESC']],
-    })
+export const getMyNotificationsService = async (userId: string, query: PaginationQuery = {}) => {
+    const options = buildQueryOptions(query, [], ['read', 'type'])
+    options.where = { ...options.where, userId }
+    if (!options.order) options.order = [['createdAt', 'DESC']]
+    const result = await Notification.findAndCountAll(options)
+    const page = query.page ? parseInt(query.page as any, 10) : 1
+    const limit = query.limit ? parseInt(query.limit as any, 10) : 10
+    return getPaginatedResponse(result, page, limit)
 }
 
 export const markAsReadService = async (id: string, userId: string) => {

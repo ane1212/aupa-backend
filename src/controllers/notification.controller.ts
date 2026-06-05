@@ -16,7 +16,7 @@ export const createNotification = async (req: Request, res: Response, next: Next
 
 export const getMyNotifications = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const notifications = await getMyNotificationsService(req.user!.id)
+        const notifications = await getMyNotificationsService(req.user!.id, req.query)
         return res.json(notifications)
     } catch (error) { next(error) }
 }
