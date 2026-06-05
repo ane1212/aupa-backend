@@ -9,7 +9,7 @@ import { createNotificationService } from './notification.service'
 export const createLocalService = async (userId: string, data: CreateLocalDto) => {
     const existing = await Local.findOne({ where: { userId } })
     if (existing) throw new AppError(ErrorCode.LOCAL_ALREADY_EXISTS, 409)
-    return await Local.create({
+    const local = await Local.create({
         name: data.name,
         address: data.address,
         description: data.description,
@@ -18,6 +18,18 @@ export const createLocalService = async (userId: string, data: CreateLocalDto) =
         userId,
         status: LocalStatus.PENDING,
     })
+
+    const admins = await User.findAll({ where: { role: UserRole.SUPER_ADMIN } })
+    for (const admin of admins) {
+        await createNotificationService({
+            userId: admin.id,
+            title: 'Nuevo local pendiente',
+            message: `Se ha enviado una solicitud para registrar el local "${data.name}". Por favor, revísalo en la sección de locales.`,
+            type: NotificationType.ALERT,
+        })
+    }
+
+    return local
 }
 
 export const getMyLocalService = async (userId: string) => {
