@@ -64,7 +64,7 @@ export const verifyToken = async (req: Request, res: Response, next: NextFunctio
     }
 
     const user = await User.findByPk(payload.id)
-    if (!user) throw new AppError(ErrorCode.USER_NOT_FOUND, 404)
+    if (!user) throw new AppError(ErrorCode.UNAUTHORIZED, 401)
     if (!user.active) throw new AppError(ErrorCode.UNAUTHORIZED, 401)
 
     req.user = { id: user.id, role: user.role }

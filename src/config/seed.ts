@@ -75,7 +75,7 @@ const seedAll = async () => {
           active: true,
         },
         {
-          name: process.env.USER_4_NAME || "Jon Aramburu",
+          name: process.env.USER_4_NAME || "Jon Aldekoa",
           email: process.env.USER_4_EMAIL || "jon.aramburu@example.com",
           password: userPassword4,
           role: UserRole.USER,
