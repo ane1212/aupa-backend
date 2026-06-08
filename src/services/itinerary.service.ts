@@ -5,7 +5,11 @@ import { PaginationQuery } from '@/types'
 import { sequelize } from '@/config'
 import { Event } from '@/models'
 
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
+
 export const createItineraryService = async (data: CreateItineraryDto) => {
+  if (!UUID_RE.test(data.eventId)) throw new AppError(ErrorCode.EVENT_NOT_FOUND, 404)
+
   const event = await Event.findByPk(data.eventId)
   if (!event) throw new AppError(ErrorCode.EVENT_NOT_FOUND, 404)
 
