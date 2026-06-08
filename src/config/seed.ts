@@ -275,7 +275,7 @@ const seedAll = async () => {
           date: new Date("2026-06-28"),
           startTime: "19:30:00",
           endTime: "21:00:00",
-          image: "https://shop.beebeer.es/568-large_default/hi-bee.jpg",
+          image: "https://molidescomteasador.com/wp-content/uploads/2017/10/catering-menorca-cata-cerveza-2.jpg",
           price: 19.5,
           capacity: 28,
           address: "Lersundi Kalea, 8, 48009 Bilbao",
@@ -371,23 +371,44 @@ const seedAll = async () => {
       { validate: true, transaction }
     );
 
-    await Comment.bulkCreate(
-      [
-        {
-          userId: user3.id,
-          eventId: event1.id,
-          content: "Muy buena organización y producto de calidad.",
-          rating: 5,
-        },
-        {
-          userId: user4.id,
-          eventId: event2.id,
-          content: "Ambiente excelente y música muy cuidada.",
-          rating: 4,
-        },
-      ],
-      { validate: true, transaction }
+    const commentTemplates = [
+      "Muy buena organización y producto de calidad.",
+      "Ambiente excelente y música muy cuidada.",
+      "El espacio estaba genial y el trato fue muy amable.",
+      "Buena experiencia en general, repetiría.",
+      "Todo bastante bien, aunque mejoraría un poco la señalización.",
+      "La propuesta fue original y el ambiente muy agradable.",
+      "Muy recomendable para ir con amigos.",
+      "Buena relación calidad-precio.",
+    ];
+
+    const commentUsers = [user1, user2, user3, user4, admin];
+
+    const eventCommentMap = {
+      [event1.id]: [user3, user4, user1],
+      [event2.id]: [user1, user3],
+      [event3.id]: [user2, user3, user4, user1],
+      [event4.id]: [user3, user4, admin],
+      [event5.id]: [user1, user2, user4, user3, admin],
+      [event6.id]: [user2, user4],
+      [event7.id]: [user1, user3, user4],
+      [event8.id]: [user2, user3, admin, user4],
+      [event9.id]: [user1, user2],
+      [event10.id]: [user3, user4, user1, admin],
+      [event11.id]: [user2, user3, user4],
+      [event12.id]: [user1, user4, user2, user3],
+    } as Record<string, typeof commentUsers>;
+
+    const comments = events.flatMap((event, i) =>
+      eventCommentMap[event.id].map((user, j) => ({
+        userId: user.id,
+        eventId: event.id,
+        content: commentTemplates[(i + j) % commentTemplates.length],
+        rating: 3 + ((i + j) % 3),
+      }))
     );
+
+    await Comment.bulkCreate(comments, { validate: true, transaction });
 
     await Incident.bulkCreate(
       [
