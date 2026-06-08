@@ -22,5 +22,4 @@ export enum CategoryType {
     PARTNER = 'partner',
     FRIENDS = 'friends',
     FAMILY = 'family'
-
 }

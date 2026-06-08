@@ -7,6 +7,7 @@ import { Notification } from './Notification';
 import { Preference } from './Preference';
 import { Comment } from './Comment';
 import { Incident } from './Incident';
+import { Itinerary } from './Itinerary'
 
 const models = {
   User,
@@ -18,6 +19,7 @@ const models = {
   Preference,
   Comment,
   Incident,
+  Itinerary
 };
 
 export default models;
@@ -31,4 +33,5 @@ export {
   Preference,
   Comment,
   Incident,
+  Itinerary
 };
