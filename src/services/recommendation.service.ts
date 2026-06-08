@@ -15,12 +15,9 @@ export const getRecommendationsService = async (
     }
 
     const url = `${baseUrl}?${params.toString()}`
-    console.log('[Data API] →', url)
     const response = await fetch(url)
-    console.log('[Data API] ← status:', response.status)
     if (!response.ok) {
         const body = await response.text()
-        console.log('[Data API] ← body:', body)
         throw new AppError(ErrorCode.INTERNAL_SERVER_ERROR, 502)
     }
     return response.json()

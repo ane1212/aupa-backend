@@ -8,6 +8,7 @@ import { localRouter } from "./local.routes";
 import { commentRouter } from "./comment.routes";
 import { preferenceRouter } from "./preference.routes";
 import { notificationRouter } from "./notification.routes";
+import { itineraryRouter } from "./itinerary.routes";
 
 export const apiRouter = Router()
 
@@ -20,3 +21,4 @@ apiRouter.use('/local', localRouter);
 apiRouter.use('/comment', commentRouter);
 apiRouter.use('/preference', preferenceRouter);
 apiRouter.use('/notification', notificationRouter);
+apiRouter.use('/itinerary', itineraryRouter)

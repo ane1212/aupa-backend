@@ -259,7 +259,7 @@ const seedAll = async () => {
           date: new Date("2026-06-27"),
           startTime: "18:00:00",
           endTime: "23:30:00",
-          image: "https://s3.elespanol.com/2026/02/16/actualidad/1003744131668_261446999_1706x960.jpg?fmt=jpeg",
+          image: "https://s2.ppllstatics.com/elcorreo/www/multimedia/2025/01/27/BILBOLEO-STAGELIVE-kVHH--1920x1344@El%20Correo.jpg",
           price: 10.0,
           capacity: 90,
           address: "Calle del Muelle, 7, 48003 Bilbao",
