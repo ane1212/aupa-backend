@@ -35,7 +35,7 @@ Incident.init({
         allowNull: false,
     },
     eventId: {
-        type: DataTypes.UUID,
+        type: DataTypes.STRING,
         allowNull: false,
     },
     content: {
