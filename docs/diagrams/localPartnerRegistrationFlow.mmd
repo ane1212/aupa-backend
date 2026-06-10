@@ -1,0 +1,23 @@
+flowchart TD
+    A([▶ Inicio: Negocio accede a /local-partner]) --> B[Paso 1: Datos del negocio\nnombre, CIF, teléfono]
+    B --> C{¿Datos válidos?}
+    C -->|No| B
+    C -->|Sí| D[Paso 2: Categoría y tipo\nde establecimiento]
+    D --> E[Paso 3: Ubicación\ndirección y coordenadas]
+    E --> F[Paso 4: Descripción\ny redes sociales]
+    F --> G[Paso 5: Imágenes\ny medios]
+    G --> H{¿Formulario completo?}
+    H -->|No| G
+    H -->|Sí| I[POST /local-partner\nal servidor]
+    I --> J{¿Email ya registrado?}
+    J -->|Sí| K([❌ Error: negocio ya existe])
+    J -->|No| L[Guarda negocio en PostgreSQL]
+    L --> M[Emite credenciales de acceso al portal]
+    M --> N([✅ Acceso al portal /local])
+    N --> O[Crear y gestionar eventos]
+    O --> P([Eventos visibles para usuarios finales])
+
+    style A fill:#1a2744,color:#fff
+    style N fill:#e07830,color:#fff
+    style P fill:#4a9e4a,color:#fff
+    style K fill:#c0392b,color:#fff

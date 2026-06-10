@@ -1,0 +1,31 @@
+sequenceDiagram
+    actor U as 👤 Usuario
+    participant C as React App
+    participant S as FastAPI
+    participant DB as PostgreSQL
+
+    U->>C: Pulsa ícono 🔖 en una tarjeta
+
+    alt No está autenticado
+        C->>U: Redirige a /login
+        U->>C: Introduce credenciales
+        C->>S: POST /auth/login
+        S-->>C: JWT token
+    end
+
+    C->>S: POST /saved {placeId}
+    Note right of C: JWT en cabecera Authorization
+
+    S->>DB: Verifica si ya existe la relación usuario–lugar
+    alt Lugar ya guardado
+        DB-->>S: Registro existente
+        S-->>C: 409 Conflict
+        C->>U: Muestra "Ya guardado"
+    else Lugar nuevo
+        DB-->>S: No existe
+        S->>DB: INSERT saved_places(userId, placeId)
+        DB-->>S: OK
+        S-->>C: 201 Created
+        C->>C: Actualiza estado local (icono cambia a ✅)
+        C->>U: Feedback visual inmediato
+    end
