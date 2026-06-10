@@ -29,7 +29,7 @@ Itinerary.init({
     primaryKey: true,
   },
   eventId: {
-    type: DataTypes.UUID,
+    type: DataTypes.STRING,
     allowNull: false,
     field: 'event_id',
   },

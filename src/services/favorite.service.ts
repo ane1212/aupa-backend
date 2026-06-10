@@ -3,10 +3,7 @@ import { CreateFavoriteDto } from '@/dtos'
 import { AppError, ErrorCode, buildQueryOptions, getPaginatedResponse } from '@/utils'
 import { PaginationQuery } from '@/types'
 
-const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
-
 export const createFavoriteService = async (data: CreateFavoriteDto) => {
-    if (!UUID_RE.test(data.eventId)) throw new AppError(ErrorCode.VALIDATION_ERROR, 400)
     return await Favorite.create(data)
 }
 
