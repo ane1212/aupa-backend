@@ -1,0 +1,28 @@
+sequenceDiagram
+    actor U as 👤 Usuario
+    participant C as React App
+    participant GPS as Dispositivo GPS
+    participant S as FastAPI
+    participant DB as PostgreSQL + PostGIS
+
+    U->>C: Abre sección "Cerca de ti"
+    C->>GPS: navigator.geolocation.getCurrentPosition()
+    GPS-->>C: {lat, lng}
+
+    alt GPS no disponible
+        C->>C: Usa ubicación por defecto (Bilbao)
+    end
+
+    C->>S: GET /recommendations/nearest?lat=X&lng=Y&limit=24
+    Note right of C: Incluye JWT en cabecera Authorization
+
+    S->>S: Valida token JWT
+    S->>DB: SELECT con ST_Distance(ubicación, punto_usuario)<br/>ORDER BY distancia ASC
+    DB-->>S: Lista de lugares ordenados por proximidad
+    S->>S: Añade campo distance_from_user a cada lugar
+    S-->>C: 200 OK + { recommendations: [...] }
+
+    C->>C: formatDistance() → "250 m" / "1.2 km"
+    C->>C: generateRandomScore() → puntuación local
+    C->>U: Renderiza tarjetas ExperienceCard
+    C->>U: Pinta marcadores en NearbyMap (Leaflet)

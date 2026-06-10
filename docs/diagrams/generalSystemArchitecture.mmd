@@ -1,0 +1,11 @@
+graph TD
+    A[👤 Usuario<br/>Navegador / Móvil] -->|HTTPS + JWT| B[⚙️ FastAPI<br/>Servidor REST]
+    B -->|SQL + PostGIS| C[(🗄️ PostgreSQL<br/>Base de Datos)]
+    B -->|HTTP| D[🌤️ Open-Meteo<br/>API del Clima]
+    A -->|Tiles del mapa| E[🗺️ OpenStreetMap<br/>Cartografía]
+
+    style A fill:#1a2744,color:#fff
+    style B fill:#e07830,color:#fff
+    style C fill:#1a2744,color:#fff
+    style D fill:#4a90d9,color:#fff
+    style E fill:#4a90d9,color:#fff

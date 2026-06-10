@@ -1,0 +1,25 @@
+sequenceDiagram
+    actor U as 👤 Usuario
+    participant C as React App
+    participant S as FastAPI
+    participant DB as PostgreSQL
+
+    U->>C: Rellena formulario de registro
+    C->>C: Valida campos (email, contraseña)
+    C->>S: POST /auth/register {nombre, email, contraseña}
+    S->>S: Verifica que el email no existe
+    S->>S: Hashea contraseña con bcrypt
+    S->>DB: INSERT nuevo usuario
+    DB-->>S: Usuario creado
+    S-->>C: 201 Created + JWT token
+    C->>C: Guarda token en memoria (Context)
+    C->>U: Redirige al Onboarding de preferencias
+
+    Note over U,DB: Sesiones posteriores (Login)
+    U->>C: Introduce email y contraseña
+    C->>S: POST /auth/login
+    S->>DB: Busca usuario por email
+    DB-->>S: Datos del usuario
+    S->>S: Verifica contraseña con bcrypt
+    S-->>C: 200 OK + nuevo JWT token
+    C->>U: Redirige al Home
